@@ -48,12 +48,12 @@ class Feed:
             route_info[route_id]={'start': min, 'end': max, 'headsign': main_headsign,
                                   'route_color': route['route_color'].item(), 
                                   'route_text_color': route['route_text_color'].item(), 'route_short_name': route['route_short_name'].item()}
-        return route_info
+        return {k: v for k, v in sorted(route_info.items(), key=lambda item: item[1]['route_short_name'])}
             #print(route_id, min, max)
 
     def DescribeForFlag(self, stop_id):
         stop_info=self.StopInfo(stop_id)
-        print(f'Stop name {stop_info.stop_name.to_string()}')
+        print(f'Stop name {stop_info.stop_name.item()}')
         stop_arrives=self.ArrivesOnStop(stop_id)
         stop_routes=self.RoutesOnStop(stop_id)
         print(f'Serves {len(stop_routes)} routes: {list(stop_routes.route_short_name)}')
