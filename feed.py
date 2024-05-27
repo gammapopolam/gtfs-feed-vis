@@ -47,7 +47,7 @@ class Feed:
             main_headsign=route_arrives.trip_headsign.mode().item()
             route_info[route_id]={'start': min, 'end': max, 'headsign': main_headsign,
                                   'route_color': route['route_color'].item(), 
-                                  'route_text_color': route['route_text_color'].item()}
+                                  'route_text_color': route['route_text_color'].item(), 'route_short_name': route['route_short_name'].item()}
         return route_info
             #print(route_id, min, max)
 
