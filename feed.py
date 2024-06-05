@@ -33,7 +33,7 @@ class Feed:
         return r_selection
     
     def ServiceTimeOfRoutes(self, stop_arrivals, stop_routes):
-        #print(stop_routes)
+
         route_ids=list(stop_routes.route_id)
         route_info=dict()
         for route_id in route_ids:
@@ -49,7 +49,7 @@ class Feed:
                                   'route_color': route['route_color'].item(), 
                                   'route_text_color': route['route_text_color'].item(), 'route_short_name': route['route_short_name'].item()}
         return {k: v for k, v in sorted(route_info.items(), key=lambda item: item[1]['route_short_name'])}
-            #print(route_id, min, max)
+
     def GetActualServiceID(self, stop_arrivals, stop_routes, service_keys):
         # Get actual service IDs by defined dates
         route_ids=list(stop_routes.route_id)
@@ -69,9 +69,7 @@ class Feed:
         return route_info
     
     def Intervalizer(self, arrivals):
-        # TODO: добавить интервализацию
-        # bug
-        arrivals=arrivals[0]
+        arrivals=arrivals[0] # bug
         hours=[t.split(':')[0] for t in arrivals]
         timetable={h: [] for h in hours}
         for hour in hours:
@@ -90,6 +88,14 @@ class Feed:
                 else:
                     timetable[hour]=f'it_{min(difs)}'
         return timetable
+    #
+    #def AggrInterval(self, route_info, pattern=[(7,9),(9,16),(16,19),(19,23)]):
+    #    if pattern is not None:
+    #        timetable_aggr=dict()
+    #         for 
+    #        for section in pattern:
+    #            hs=f'{section[0]}-{section[1]}'
+
     
     def Timetable(self, stop_arrivals, stop_routes, service_keys):
         #! ГОСТ Р 58287-2018
@@ -132,6 +138,6 @@ class Feed:
         timetable=self.Timetable(stop_arrivals, stop_routes, service_keys_found)
         return timetable
 
-feed=Feed('k26_static')
-stop=feed.DescribeForLayout(21, ['summer', 'all', '0'])
-print(stop)
+#feed=Feed('k26_static')
+#stop=feed.DescribeForLayout(21, ['summer', 'all', '0'])
+#print(stop)
