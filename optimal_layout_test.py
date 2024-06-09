@@ -1,6 +1,5 @@
-from fpdf import FPDF
 import math
-from feed import Feed
+from fpdf import FPDF
 
 A1={
     'bus_21': 
@@ -88,50 +87,26 @@ A1={
     'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 48
     }
     }
-
-# Макет по авторской концепции
-def HexToRGB(h):
-    h = h.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-class Route:
-    def __init__(self, route_timetable):
-        self.service_cols=len(route_timetable['timetable'].keys())
-        self.tt_rows={s: route_timetable['timetable'][s] for s in route_timetable['timetable'].keys()}
-        self.x=0
-        self.y=0
-        
-        self.w=0
-        self.h=0
-class Timetable:
-    def __init__(self, timetable):
-        pass
-
-
-#stop_id=18
-#feed=Feed('k26_static')
-#stop=feed.DescribeForLayout(21, ['summer', 'all', '0'])
-#stop_name=feed.StopInfo(stop_id).stop_name.item()
 stop=A1
 stop_id=1
 stop_name='Станция МЦД Лобня'
-
 pdf = FPDF(format=(475, 675))
 pdf.add_font('MoscowSans', '', r"D:\fonts\Moscow Sans\MoscowSans-Regular.otf", uni=True)
 pdf.add_font('MoscowSans-Bold', 'B', r"D:\fonts\Moscow Sans\MoscowSans-Bold.otf", uni=True)
 pdf.alias_nb_pages()
 pdf.add_page()
 page=1
-pdf.set_font('MoscowSans', '', 108)
+pdf.set_font('MoscowSans-Bold', 'B', 108)
 #pdf.image("stop-01.png", x=10, y=10, w = 50, h = 50)
 pdf.set_xy(20, 20)
 pdf.cell(475-20-20, 40, stop_name, 0, 0, 'L')
-
-def DefineBoxes(pdf, routes, available_canvas):
-    route_ids=list(routes.keys())
-    num_routes=len(route_ids)
-    x, y, w, h = available_canvas
-    for route_id in route_ids:
-        tt=routes[route_id]['timetable']
+# X Y W H
+available_canvas=(20, 80, 435, 615)
+pdf.set_xy(available_canvas[0], available_canvas[1])
+for route in A1.keys():
+    tt=A1[route]['timetable']
+    print(route, len(tt))
+    if len(tt)==1 and route=='bus_21':
         max_h_trips=0
         for tt_p in tt.keys():
             max_cols=len(tt.keys())
@@ -140,67 +115,8 @@ def DefineBoxes(pdf, routes, available_canvas):
             for tt_m in tt[tt_p]:
                 if max_h_trips<len(tt[tt_p][tt_m]):
                     max_h_trips=len(tt[tt_p][tt_m])
-        min_h_size=(20, 20)
-        min_m_size=(15*max_h_trips, 15)
-        print(route_id, max_cols, max_h, max_h_trips, end=' ')
-        global_cols=max_cols
-        global_rows=max_h
-        dx=(20+15*max_h_trips)*global_cols+5
-        while dx<435:
-            dx=(20+15*max_h_trips)*global_cols+5
-            #print(global_cols, global_rows)
-            dy=20*max_h+5
-            if dx<435:
-                global_cols+=1
-                global_rows=math.ceil(max_h/global_cols)
-            else: break
-        print('cols',global_cols, 'rows', global_rows)
-        for i in range(global_cols):
-            print('[ ]'*global_rows)
-
-        
-        #print(min_h_size, min_m_size)
-        
-    
-        #global_cols_rows={s: tt[s] for s in tt.keys()} # недельные варианты: будни, выходные
-        #print(global_cols_rows)
-         
-        
-def DrawRoute(pdf, route, x, y, w, h):
-    # RouteRect w, h
-    rect=(70, 40)
-    pdf.set_font('MoscowSans', '', 72)
-    pdf.set_xy(x, y)
-    pdf.set_fill_color(*HexToRGB(route['route_color']))
-    pdf.set_text_color(*HexToRGB(route['route_text_color']))
-    pdf.cell(*rect, str(route['route_short_name']), 0, 0, 'C', True)
-    pdf.set_fill_color(r=255)
-    #RouteHeadsign x, y, w, h
-    pdf.set_text_color(r=0)
-    pdf.set_font('MoscowSans', '', 60)
-    part_1, part_2 = route['headsign'].split(r'\n')
-    rect_hs_align=10
-    hs=(x+rect[0]+rect_hs_align, y, w-rect[0]-rect_hs_align, rect[1])
-    hs1=(hs[0], hs[1], hs[2], hs[3]/2)
-    hs2=(hs[0], hs[1]+hs[3]/2, hs[2], hs[3]/2)
-    pdf.set_xy(hs1[0], hs1[1])
-    pdf.cell(hs1[2], hs1[3], part_1, 0, 0, 'L')
-    pdf.set_xy(hs2[0], hs2[1])
-    pdf.cell(hs2[2], hs2[3], part_2, 0, 0, 'L')
-    x, y, w, h = available_canvas
-    pdf.set_xy(20, hs2[1]+hs2[3]+20)
-
-    tt=route['timetable']
-    #print(route, len(tt))
-    if len(tt)==1:
-        max_h_trips=0
-        for tt_p in tt.keys():
-            max_cols=len(tt.keys())
-            max_h=len(tt[tt_p])
-            for tt_m in tt[tt_p]:
-                if max_h_trips<len(tt[tt_p][tt_m]):
-                    max_h_trips=len(tt[tt_p][tt_m])
         #print(max_h_trips)
+        x, y, w, h = available_canvas
         table_box=[x, y, w, h]
         sample_row_box=[None, None, 10*max_h_trips, 12]
         print(sample_row_box)
@@ -231,9 +147,4 @@ def DrawRoute(pdf, route, x, y, w, h):
                         pdf.set_font('MoscowSans-Bold', 'B', 24)
                         row.cell(' '.join(tt['ed'][hs[h+j]]))
 
-# available_canvas: x, y, w, h
-# в эту канву нужно вместить как можно большее число маршрутов
-available_canvas=(20, 80, 435, 615)
-#DefineBoxes(pdf, stop, available_canvas)
-DrawRoute(pdf, stop['bus_21'], *available_canvas)
 pdf.output(f'stop_{stop_id}_mrg.pdf')
