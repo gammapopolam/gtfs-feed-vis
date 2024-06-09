@@ -1,5 +1,5 @@
 from fpdf import FPDF
-
+import math
 from feed import Feed
 
 A1={
@@ -141,8 +141,24 @@ def DefineBoxes(pdf, routes, available_canvas):
                     max_h_trips=len(tt[tt_p][tt_m])
         min_h_size=(20, 20)
         min_m_size=(15*max_h_trips, 15)
-        print(route_id, max_cols, max_h, max_h_trips)
-        print(min_h_size, min_m_size)
+        print(route_id, max_cols, max_h, max_h_trips, end=' ')
+        global_cols=max_cols
+        global_rows=max_h
+        dx=(20+15*max_h_trips)*global_cols+5
+        while dx<435:
+            dx=(20+15*max_h_trips)*global_cols+5
+            #print(global_cols, global_rows)
+            dy=20*max_h+5
+            if dx<435:
+                global_cols+=1
+                global_rows=math.ceil(max_h/global_cols)
+            else: break
+        print('cols',global_cols, 'rows', global_rows)
+        for i in range(global_cols):
+            print('[ ]'*global_rows)
+
+        
+        #print(min_h_size, min_m_size)
         
     
         #global_cols_rows={s: tt[s] for s in tt.keys()} # недельные варианты: будни, выходные
