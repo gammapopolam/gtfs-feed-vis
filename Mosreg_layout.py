@@ -177,7 +177,7 @@ def DrawRoute(pdf, route, x, y, w, h):
     pdf.set_fill_color(r=255)
     #RouteHeadsign x, y, w, h
     pdf.set_text_color(r=0)
-    pdf.set_font('MoscowSans', '', 60)
+    pdf.set_font('MoscowSans', '', 48)
     part_1, part_2 = route['headsign'].split(r'\n')
     rect_hs_align=10
     hs=(x+rect[0]+rect_hs_align, y, w-rect[0]-rect_hs_align, rect[1])
@@ -185,14 +185,18 @@ def DrawRoute(pdf, route, x, y, w, h):
     hs2=(hs[0], hs[1]+hs[3]/2, hs[2], hs[3]/2)
     pdf.set_xy(hs1[0], hs1[1])
     pdf.cell(hs1[2], hs1[3], part_1, 0, 0, 'L')
+    pdf.set_font('MoscowSans', '', 60)
     pdf.set_xy(hs2[0], hs2[1])
     pdf.cell(hs2[2], hs2[3], part_2, 0, 0, 'L')
     x, y, w, h = available_canvas
-    pdf.set_xy(20, hs2[1]+hs2[3]+20)
+    pdf.set_xy(x, hs2[1]+hs2[3]+20)
 
     tt=route['timetable']
     #print(route, len(tt))
-    if len(tt)==1:
+    if len(tt)==1 and list(tt.keys())[0]=='ed':
+        pdf.set_xy(x, y+rect[1]+10)
+        pdf.set_font('MoscowSans', '', 32)
+        pdf.cell(w, 10, 'Ежедневно', 0, 0, 'L')
         max_h_trips=0
         for tt_p in tt.keys():
             max_cols=len(tt.keys())
@@ -202,38 +206,132 @@ def DrawRoute(pdf, route, x, y, w, h):
                     max_h_trips=len(tt[tt_p][tt_m])
         #print(max_h_trips)
         table_box=[x, y, w, h]
-        sample_row_box=[None, None, 10*max_h_trips, 12]
-        print(sample_row_box)
+        sample_row_box=[None, None, 15*(max_h_trips+1)+5, 10+5]
+        #print(sample_row_box)
         # количество колонок
         cols=math.floor(table_box[2]/sample_row_box[2])
         rows=math.ceil(max_h/cols)
-        print(cols, rows)
-
+        #print('cols, rows', cols, rows)
+        pdf.set_xy(x, y+rect[1]+30)
         #pdf.set_draw_color(255)
         #pdf.set_line_width(0)
         col_widths=[]
+        text_aligns=[]
         for i in range(cols):
-            col_widths.append(10)
-            col_widths.append(5*max_h_trips)
-        with pdf.table(width=w, col_widths=col_widths, line_height=12, align='L', gutter_width=5, gutter_height=5, first_row_as_headings=False, v_align='T', borders_layout='NONE') as table:
-            
+            col_widths.append(15)
+            text_aligns.append('RIGHT')
+            col_widths.append(5*(max_h_trips+1))
+            text_aligns.append('LEFT')
+        #print(col_widths)
+        with pdf.table(width=w, col_widths=col_widths, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T', text_align=text_aligns, borders_layout='NONE') as table:
             pdf.set_font('MoscowSans-Bold', 'B', 24)
             hs = list(tt['ed'].keys())
-            print(len(hs))
-            for h in range(0, len(hs), cols):
-                print(h)
+            #print(hs)
+            #print(len(hs))
+            for hh in range(0, len(hs), cols):
+                #print(hh)
                 row = table.row()
                 for j in range(cols):
-                    if h+j!=len(hs):
-                        print(j, hs[h+j], ' '.join(tt['ed'][hs[h+j]]))
-                        pdf.set_font('MoscowSans-Bold', 'B', 30)
-                        row.cell(hs[h+j])
+                    #print(hh+j)
+                    if hh+j!=len(hs):
+                        #print(j, hs[hh+j], ' '.join(tt['ed'][hs[hh+j]]))
+                        pdf.set_font('MoscowSans-Bold', 'B', 36)
+                        row.cell(hs[hh+j])
                         pdf.set_font('MoscowSans-Bold', 'B', 24)
-                        row.cell(' '.join(tt['ed'][hs[h+j]]))
+                        row.cell(' '.join(tt['ed'][hs[hh+j]]))
+                    else:
+                        y=y+rect[1]+sample_row_box[3]*rows+50
+                        #y+=(5+12+sample_row_box[3])*rows
+                        return (x, y, w, h-((rect[1]+sample_row_box[3])*rows+50))
+    elif len(tt)==2 and list(tt.keys())[0]=='wd' and list(tt.keys())[1]=='we':
+        pdf.set_xy(x, y+rect[1]+10)
+        pdf.set_font('MoscowSans', '', 32)
+        pdf.cell(w//2, 10, 'По будням', 0, 0, 'L')
+        pdf.set_xy(x+w//2, y+rect[1]+10)
+        pdf.cell(w//2, 10, 'По выходным', 0, 0, 'L')
+
+        max_h_trips=0
+        for tt_p in tt.keys():
+            max_cols=len(tt.keys())
+            max_h=len(tt[tt_p])
+            for tt_m in tt[tt_p]:
+                if max_h_trips<len(tt[tt_p][tt_m]):
+                    max_h_trips=len(tt[tt_p][tt_m])
+        #print(max_h_trips)
+        table_box_wd=[x, y, w//2, h]
+        table_box_we=[x+w//2, y, w//2, h]
+        sample_row_box=[None, None, 15*(max_h_trips+1)+5, 10+5]
+        print(sample_row_box)
+        cols_wd=math.floor(table_box_wd[2]/sample_row_box[2])
+        rows_wd=math.ceil(max_h/cols_wd)
+
+        cols_we=math.floor(table_box_we[2]/sample_row_box[2])
+        rows_we=math.ceil(max_h/cols_we)
+        pdf.set_xy(table_box_wd[0], y+rect[1]+30)
+        col_widths_wd=[]
+        col_widths_we=[]
+        text_aligns_wd=[]
+        text_aligns_we=[]
+        for i in range(cols_wd):
+            text_aligns_wd.append('RIGHT')
+            col_widths_wd.append(15)
+            text_aligns_wd.append('LEFT')
+            col_widths_wd.append(5*(max_h_trips+1))
+        for j in range(cols_we):
+            text_aligns_we.append('RIGHT')
+            col_widths_we.append(15)
+            text_aligns_we.append('LEFT')
+            col_widths_we.append(5*(max_h_trips+1))
+        with pdf.table(width=table_box_wd[2], col_widths=col_widths_wd, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T',text_align=text_aligns_wd, borders_layout='NONE') as table:
+            pdf.set_font('MoscowSans-Bold', 'B', 24)
+            hs = list(tt['wd'].keys())
+            #print(hs)
+            #print(len(hs))
+            for hh in range(0, len(hs), cols_wd):
+                #print(hh)
+                row = table.row()
+                for j in range(cols_wd):
+                    #print(hh+j)
+                    if hh+j!=len(hs):
+                        #print(j, hs[hh+j], ' '.join(tt['ed'][hs[hh+j]]))
+                        pdf.set_font('MoscowSans-Bold', 'B', 36)
+                        row.cell(hs[hh+j])
+                        pdf.set_font('MoscowSans-Bold', 'B', 24)
+                        row.cell(' '.join(tt['wd'][hs[hh+j]]))
+                    else:
+                        y=y+rect[1]+sample_row_box[3]*rows_wd+50
+                        #y+=(5+12+sample_row_box[3])*rows
+                        available_canvas_wd = (x, y, w, h-((rect[1]+sample_row_box[3])*rows_wd+50))
+        pdf.set_xy(table_box_we[0], y+rect[1]+30)
+        with pdf.table(width=table_box_we[2], col_widths=col_widths_we, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T',text_align=text_aligns_we, borders_layout='NONE') as table:
+            pdf.set_font('MoscowSans-Bold', 'B', 24)
+            hs = list(tt['we'].keys())
+            #print(hs)
+            #print(len(hs))
+            for hh in range(0, len(hs), cols_we):
+                #print(hh)
+                row = table.row()
+                for j in range(cols_we):
+                    #print(hh+j)
+                    if hh+j!=len(hs):
+                        #print(j, hs[hh+j], ' '.join(tt['ed'][hs[hh+j]]))
+                        pdf.set_font('MoscowSans-Bold', 'B', 36)
+                        row.cell(hs[hh+j])
+                        pdf.set_font('MoscowSans-Bold', 'B', 24)
+                        row.cell(' '.join(tt['we'][hs[hh+j]]))
+                    else:
+                        y=y+rect[1]+sample_row_box[3]*rows_we+50
+                        #y+=(5+12+sample_row_box[3])*rows
+                        available_canvas_we = (x, y, w, h-((rect[1]+sample_row_box[3])*rows_we+50))
 
 # available_canvas: x, y, w, h
 # в эту канву нужно вместить как можно большее число маршрутов
 available_canvas=(20, 80, 435, 615)
+print(available_canvas)
 #DefineBoxes(pdf, stop, available_canvas)
-DrawRoute(pdf, stop['bus_21'], *available_canvas)
+available_canvas = DrawRoute(pdf, stop['bus_21'], *available_canvas)
+print(available_canvas)
+available_canvas = DrawRoute(pdf, stop['bus_41'], *available_canvas)
+print(available_canvas)
+available_canvas = DrawRoute(pdf, stop['bus_48'], *available_canvas)
 pdf.output(f'stop_{stop_id}_mrg.pdf')
