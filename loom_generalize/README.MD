@@ -92,3 +92,5 @@ generalizer={
 А на генерализованной - как я и хотел - 7 маршрутов (совмещены `9+16`, `10+11+29+18`)
 
 <img src="loom_gen_2.png" width=100% height=100%>
+
+#### В тайлах: [Транспорт Кисловодска](https://gammapopolam.github.io/gtfs-feed-vis/loom_generalize/) (*только 16-17 зумы*)
