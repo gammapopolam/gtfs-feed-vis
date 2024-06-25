@@ -13,3 +13,9 @@
 <img src="stop_1_mrg-02.png" width=50% height=50%>
 
 ---
+
+## Лист А4 горизонтальный с постоянной компоновкой
+
+<img src="stop_1_mrg_a4-01.png" width=50% height=50%>
+
+<img src="stop_1_mrg_a4-03.png" width=50% height=50%>
