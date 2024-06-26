@@ -93,4 +93,4 @@ generalizer={
 
 <img src="loom_gen_2.png" width=100% height=100%>
 
-#### В тайлах: [Транспорт Кисловодска](https://gammapopolam.github.io/gtfs-feed-vis/loom_generalize/) (*только 16-17 зумы*)
+#### В тайлах: [Транспорт Кисловодска](https://gammapopolam.github.io/gtfs-feed-vis/loom_generalize/) (*13-17 зумы*)
