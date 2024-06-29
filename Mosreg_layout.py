@@ -8,19 +8,19 @@ A1_1={
     'timetable': {
         'ed': {
             '05': ['35', '45', '55'],
-            '06': ['05', '25', '35', '45', '55', '59'],
-            '07': ['05', '14', '20', '25', '35', '45', '55'],
+            '06': ['05', '25', '35', '45', '55'],
+            '07': ['00', '05', '15', '20', '25', '35', '45', '55'],
             '08': ['05', '10', '15', '25', '30', '35', '55'],
             '09': ['05', '15', '20', '25', '35', '40', '45', '55'],
             '10': ['05', '15', '25', '35', '45', '55'],
-            '11': ['05', '15', '25', '35', '45', '50', '55'],
-            '12': ['05', '15', '20', '25', '35', '45', '55', '59'],
-            '13': ['05', '15', '25', '30', '35', '45', '55'],
+            '11': ['05', '15', '25', '35', '45', '55'],
+            '12': ['05', '15', '20', '25', '35', '45', '55'],
+            '13': ['00', '05', '15', '25', '30', '35', '45', '55'],
             '14': ['05', '10', '15', '25', '35', '40', '45', '55'],
             '15': ['05', '15', '25', '35', '45', '55'],
             '16': ['05', '15', '20', '25', '35', '45', '50', '55'],
-            '17': ['05', '15', '25', '30', '35', '45', '55', '59'],
-            '18': ['05', '15', '25', '35', '40', '45', '55'],
+            '17': ['05', '15', '25', '30', '35', '45', '55'],
+            '18': ['00', '05', '15', '25', '35', '40', '45', '55'],
             '19': ['05', '10', '15', '25', '35', '40', '45', '55'],
             '20': ['05', '25', '40', '55'],
             '21': ['05', '20', '35', '50'],
@@ -35,14 +35,12 @@ A1_1={
     {
         'timetable': {
         'ed': {
-            '06': ['45'],
-            '07': ['35'],
-            '10': ['10'],
-            '11': ['15'],
-            '13': ['45'],
-            '16': ['07'],
-            '17': ['55'],
-            '18': ['55']
+            '07': ['10'],
+            '08': ['30'],
+            '12': ['10'],
+            '14': ['00'],
+            '16': ['30'],
+            '18': ['30']
             }
     },
     'headsign': r'МЦД Лобня \nМЦД Химки',
@@ -181,7 +179,7 @@ A2={
             }
     },
     'headsign': r'МЦД Лобня \nКрасная Поляна',
-    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 4, 'description': None
+    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 4, 'description': 'без заезда в мкр.Катюшки'
     },
     'bus_9': 
     {
@@ -210,7 +208,7 @@ A2={
             }
     },
     'headsign': r'МЦД Лобня \nКрасная Поляна',
-    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 9, 'description': 'через Депо'
+    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 9, 'description': 'через мкр.Депо'
     },
 }
 A3={
@@ -219,9 +217,9 @@ A3={
     'timetable': {
         'wd': {
             '05': ['55'],
-            '06': ['35', '45'],
+            '06': ['25', '45'],
             '07': ['20', '40'],
-            '08': ['10', '30', '55'],
+            '08': ['10', '30', '55а'],
             '09': ['50'],
             '10': ['25'],
             '11': ['30'],
@@ -230,9 +228,9 @@ A3={
             '14': ['00', '30'],
             '15': ['00', '40'],
             '16': ['20', '55'],
-            '17': ['25', '35'],
-            '18': ['00', '35'],
-            '19': ['00', '15', '35'],
+            '17': ['15', '35'],
+            '18': ['00', '35', '55'],
+            '19': ['15', '35'],
             '20': ['00', '15', '40'],
             '21': ['30'],
             '23': ['00']
@@ -258,7 +256,28 @@ A3={
             }
     },
     'headsign': r'МЦД Лобня \nКруглое озеро',
-    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 23, 'description': None
+    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 23, 'description': 'а - через мкр. Красная Поляна'
+    },
+    'bus_50': 
+    {
+    'timetable': {
+        'ed': {
+            '07': ['10'],
+            '08': ['00а'],
+            '10': ['10в'],
+            '12': ['00'],
+            '13': ['10', '50б'],
+            '14': ['40'],
+            '15': ['40а'],
+            '16': ['35в'],
+            '18': ['00д'],
+            '19': ['10г'],
+            '20': ['20'],
+            '21': ['40']
+            }
+    },
+    'headsign': r'МЦД Лобня \nРогачёво',
+    'route_color': '#79A859', 'route_text_color': '#ffffff', 'route_short_name': 50, 'description': 'а - через Турбичево, б - до Рождествено, в - до Фёдоровки, \nг - через Турбичево и Телешово, д - через Телешово'
     },
 }
 # Макет по авторской концепции
@@ -274,10 +293,6 @@ class Route:
         
         self.w=0
         self.h=0
-class Timetable:
-    def __init__(self, timetable):
-        pass
-
 
 #stop_id=18
 #feed=Feed('k26_static')
@@ -308,6 +323,25 @@ def print_platform(platform, stop_id):
             #print(pdf.get_x(), pdf.get_y())
             available_canvas=(20, 20, 435, 595)
         available_canvas = DrawRoute(pdf, stop[r], *available_canvas)
+        
+        if stop[r]['description'] is not None:
+            available_canvas=[available_canvas[0], available_canvas[1]+20, available_canvas[2], available_canvas[3]-20]
+            pdf.set_xy(available_canvas[0], available_canvas[1]-20)
+            pdf.cell(580, 10, f'Примечание:')
+            text=[]
+            if '\n' in stop[r]['description']:
+                text=stop[r]['description'].split('\n')
+                for i in range(len(text)):
+                    line=text[i]
+                    print(line)
+                    pdf.set_xy(available_canvas[0], available_canvas[1]-10)
+                    available_canvas=[available_canvas[0], available_canvas[1]+10, available_canvas[2], available_canvas[3]-10]
+                    pdf.cell(580, 20, f'{line}')
+            else:
+                line=stop[r]['description']
+                pdf.set_xy(available_canvas[0], available_canvas[1]-10)
+                pdf.cell(580, 20, f'{line}')
+        available_canvas=[available_canvas[0], available_canvas[1]+20, available_canvas[2], available_canvas[3]-20]
     pdf.output(f'stop_{stop_id}_mrg.pdf')
 
 def DrawRoute(pdf, route, x, y, w, h):
@@ -348,7 +382,7 @@ def DrawRoute(pdf, route, x, y, w, h):
             for tt_m in tt[tt_p]:
                 if max_h_trips<len(tt[tt_p][tt_m]):
                     max_h_trips=len(tt[tt_p][tt_m])
-        #print(max_h_trips)
+        print(max_h_trips)
         table_box=[x, y, w, h]
         sample_row_box=[None, None, 15*(max_h_trips+1)+5, 10+5]
         #print(sample_row_box)
@@ -362,12 +396,13 @@ def DrawRoute(pdf, route, x, y, w, h):
         col_widths=[]
         text_aligns=[]
         for i in range(cols):
-            col_widths.append(15)
+            col_widths.append(20)
             text_aligns.append('RIGHT')
-            col_widths.append(5*(max_h_trips+1))
+            col_widths.append(5*(max_h_trips+3))
             text_aligns.append('LEFT')
         #print(col_widths)
-        with pdf.table(width=w, col_widths=col_widths, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T', text_align=text_aligns, borders_layout='NONE') as table:
+        pdf.set_draw_color(195)
+        with pdf.table(width=w, col_widths=col_widths, borders_layout='HORIZONTAL_LINES', line_height=17, align='L', gutter_width=0, gutter_height=0, first_row_as_headings=False, v_align='T', text_align=text_aligns) as table:
             pdf.set_font('MoscowSans-Bold', 'B', 24)
             hs = list(tt['ed'].keys())
             #print(hs)
@@ -405,7 +440,7 @@ def DrawRoute(pdf, route, x, y, w, h):
         table_box_wd=[x, y, w//2, h]
         table_box_we=[x+w//2, y, w//2, h]
         sample_row_box=[None, None, 15*(max_h_trips+1)+5, 10+5]
-        print(sample_row_box)
+        #print(sample_row_box)
         cols_wd=math.floor(table_box_wd[2]/sample_row_box[2])
         rows_wd=math.ceil(max_h/cols_wd)
 
@@ -429,7 +464,8 @@ def DrawRoute(pdf, route, x, y, w, h):
         available_canvas_we=None
         available_canvas_wd=None
         back_y=y
-        with pdf.table(width=table_box_wd[2], col_widths=col_widths_wd, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T',text_align=text_aligns_wd, borders_layout='NONE') as table:
+        pdf.set_draw_color(195)
+        with pdf.table(width=table_box_wd[2], col_widths=col_widths_wd, borders_layout='HORIZONTAL_LINES', line_height=17, align='L', gutter_width=0, gutter_height=0, first_row_as_headings=False, v_align='T',text_align=text_aligns_wd) as table:
             pdf.set_font('MoscowSans-Bold', 'B', 24)
             hs = list(tt['wd'].keys())
             #print(hs)
@@ -451,7 +487,7 @@ def DrawRoute(pdf, route, x, y, w, h):
                         available_canvas_wd = (x, y, w, h-((rect[1]+sample_row_box[3])*rows_wd+50))
         y=back_y
         pdf.set_xy(table_box_we[0], y+rect[1]+30)
-        with pdf.table(width=table_box_we[2], col_widths=col_widths_we, line_height=12, align='L', gutter_width=2.5, gutter_height=5, first_row_as_headings=False, v_align='T',text_align=text_aligns_we, borders_layout='NONE') as table:
+        with pdf.table(width=table_box_we[2], col_widths=col_widths_we, borders_layout='HORIZONTAL_LINES', line_height=17, align='L', gutter_width=0, gutter_height=0, first_row_as_headings=False, v_align='T',text_align=text_aligns_we) as table:
             pdf.set_font('MoscowSans-Bold', 'B', 24)
             hs = list(tt['we'].keys())
             #print(hs)
@@ -460,7 +496,7 @@ def DrawRoute(pdf, route, x, y, w, h):
                 #print(hh)
                 row = table.row()
                 for j in range(cols_we):
-                    print(hh+j, len(hs))
+                    #print(hh+j, len(hs))
                     if hh+j<len(hs)-1:
                         #print(j, hs[hh+j], ' '.join(tt['ed'][hs[hh+j]]))
                         pdf.set_font('MoscowSans-Bold', 'B', 36)
@@ -482,47 +518,4 @@ print_platform(A1, 1)
 print_platform(A2, 2)
 print_platform(A3, 3)
 
-
-
-
-
-def DefineBoxes(pdf, routes, available_canvas):
-    route_ids=list(routes.keys())
-    num_routes=len(route_ids)
-    x, y, w, h = available_canvas
-    for route_id in route_ids:
-        tt=routes[route_id]['timetable']
-        max_h_trips=0
-        for tt_p in tt.keys():
-            max_cols=len(tt.keys())
-            max_h=len(tt[tt_p])
-            
-            for tt_m in tt[tt_p]:
-                if max_h_trips<len(tt[tt_p][tt_m]):
-                    max_h_trips=len(tt[tt_p][tt_m])
-        min_h_size=(20, 20)
-        min_m_size=(15*max_h_trips, 15)
-        print(route_id, max_cols, max_h, max_h_trips, end=' ')
-        global_cols=max_cols
-        global_rows=max_h
-        dx=(20+15*max_h_trips)*global_cols+5
-        while dx<435:
-            dx=(20+15*max_h_trips)*global_cols+5
-            #print(global_cols, global_rows)
-            dy=20*max_h+5
-            if dx<435:
-                global_cols+=1
-                global_rows=math.ceil(max_h/global_cols)
-            else: break
-        print('cols',global_cols, 'rows', global_rows)
-        for i in range(global_cols):
-            print('[ ]'*global_rows)
-
-        
-        #print(min_h_size, min_m_size)
-        
-    
-        #global_cols_rows={s: tt[s] for s in tt.keys()} # недельные варианты: будни, выходные
-        #print(global_cols_rows)
-         
         
