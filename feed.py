@@ -6,6 +6,7 @@ from pandas.errors import SettingWithCopyWarning
 import subprocess
 import os
 import mapbox_vector_tile
+import json
 
 warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 class Loom:
@@ -61,6 +62,7 @@ class Loom:
         except subprocess.CalledProcessError as exc:                                                                                                   
             print("error code", exc.returncode, exc.output)
     def transitmap(self, render_engine='svg', line_width=20, line_spacing=10, outline_width=1, render_dir_markers=False, no_render_stations=False, tight_stations=False, no_render_node_connections=False, labels=False, z=[14,15,16,17]):
+        self.zls=z
         transitmap_cfg=f'transitmap --line-width={line_width} --line-spacing={line_spacing} --outline-width={outline_width}'
         if render_dir_markers==True:
             transitmap_cfg+=f' --render-dir-markers'
@@ -82,7 +84,7 @@ class Loom:
         except subprocess.CalledProcessError as exc:                                                                                                   
             print("error code", exc.returncode, exc.output)
     def decode_mvt(self, zl=14):
-        def pixel2deg(xtile, ytile, zoom, xpixel, ypixel, extent = 4096):
+        def pixel2deg(xtile, ytile, zoom, xpixel, ypixel, extent = 1024):
             # from https://gis.stackexchange.com/a/460173/44746
             n = 2.0 ** zoom
             xtile = xtile + (xpixel / extent)
@@ -106,12 +108,36 @@ class Loom:
                 tile_x=int(tile.split('/')[-2])
                 tile_y=int(tile.split('/')[-1][:-4])
                 decoded_data = mapbox_vector_tile.decode(data, transformer = lambda x, y: pixel2deg(tile_x, tile_y, tile_zoom, x, y))
-                inner_connections.append(decoded_data['inner-connections'])
-                lines.append(decoded_data['lines'])
-                stations.append(decoded_data['stations'])
+                #print(decoded_data)
+                inner_connections.append(decoded_data['inner-connections']['features'])
+                lines.append(decoded_data['lines']['features'])
+                stations.append(decoded_data['stations']['features'])
+        lines=[fe for fes in lines for fe in fes]
+        stations=[fe for fes in stations for fe in fes]
+        inner_connections=[fe for fes in inner_connections for fe in fes]
+        #print('ic', len(inner_connections))
         return lines, stations, inner_connections
-            
+    
+    def net2gpkg(self):
+        #zls = [ f.path for f in os.scandir(f'/{self.selection_folder}') if f.is_dir() and 'gtfs_edited' not in f ]
+        for zl in self.zls:
+            lines, stations, inner_connections = self.decode_mvt(zl)
 
+            gdf_lines=gpd.GeoDataFrame.from_features(lines)
+            gdf_stations=gpd.GeoDataFrame.from_features(stations)
+            gdf_inner_connections=gpd.GeoDataFrame.from_features(inner_connections)
+            if len(gdf_lines)>0:
+                gdf_lines.to_file(f'{self.selection_folder}/stop_{self.stop_id}.gpkg', driver='GPKG', layer=f'stop_{self.stop_id}_z{zl}_lines')
+            if len(gdf_stations)>0:
+                gdf_stations.to_file(f'{self.selection_folder}/stop_{self.stop_id}.gpkg', driver='GPKG', layer=f'stop_{self.stop_id}_z{zl}_stations')
+            if len(gdf_inner_connections)>0:
+                gdf_inner_connections.to_file(f'{self.selection_folder}/stop_{self.stop_id}.gpkg', driver='GPKG', layer=f'stop_{self.stop_id}_z{zl}_ic')
+
+            subprocess.run(f'rm -rf {self.selection_folder}/{zl}', shell=True)
+        #dumping={'type': 'FeatureCollection', 'features': [*lines[0]['features'], *stations[0]['features'], *inner_connections[0]['features']]}
+        #with open(f'{self.selection_folder}/stop_{self.stop_id}_zl{zl}.json', 'w', encoding='utf-8') as net:
+        #    json.dump(dumping, net)
+        print(f'{self.selection_folder}/stop_{self.stop_id}.gpkg')
 class Feed:
     def __init__(self, folder: str) -> None:
         # Initialize feed by importing csv to df
