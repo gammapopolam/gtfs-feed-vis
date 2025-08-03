@@ -270,6 +270,45 @@ class Feed:
         self.calendar_dates.to_csv(f'{folder}/stop_{stop_id}/gtfs_edited/calendar_dates.txt', index=False, sep=',', header=True)
         shape_selection.drop('geometry', axis=1).to_csv(f'{folder}/stop_{stop_id}/gtfs_edited/shapes.txt', index=False, sep=',', header=True)
         return f'{folder}/stop_{stop_id}'
+    def SaveMultipleSelectionOfStops(self, stop_ids, folder):
+        # Объединяем данные для всех остановок
+        all_stop_geoms = self.stops[self.stops.stop_id.isin(stop_ids)]
+        all_stop_times_selection = pd.concat([self.STSelection(stop_id, self.stop_times) for stop_id in stop_ids])
+        all_stops_selection = self.SSelection(all_stop_times_selection)
+        
+        # Получаем данные о поездках и маршрутах
+        all_stop_times_merge = all_stop_times_selection.merge(self.trips, on='trip_id', how='left')
+        all_trip_ids = list(set(all_stop_times_merge.trip_id))
+        all_trips_selection, all_routes_selection = self.RTSelection(all_trip_ids, self.trips, self.routes)
+        
+        # Получаем данные о формах маршрутов
+        all_shape_ids = list(set(all_stop_times_merge.shape_id))
+        all_shape_selection = self.ShapeSelection(all_stop_geoms, all_shape_ids, self.shapes)
+
+        # Создаем директории
+        subprocess.run(f'rm -rf {folder}/multiple_stops/*', stderr=subprocess.STDOUT, shell=True)
+        subprocess.run(f'mkdir -p {folder}/multiple_stops', stderr=subprocess.STDOUT, shell=True)
+        subprocess.run(f'mkdir -p {folder}/multiple_stops/gtfs_edited', stderr=subprocess.STDOUT, shell=True)
+
+        # Сохраняем файлы
+        all_stops_selection.drop('geometry', axis=1).to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/stops.txt', index=False, sep=',', header=True)
+        all_stop_times_selection.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/stop_times.txt', index=False, sep=',', header=True)
+        all_trips_selection.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/trips.txt', index=False, sep=',', header=True)
+        all_routes_selection.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/routes.txt', index=False, sep=',', header=True)
+        self.agency.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/agency.txt', index=False, sep=',', header=True)
+        self.calendar.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/calendar.txt', index=False, sep=',', header=True)
+        self.calendar_dates.to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/calendar_dates.txt', index=False, sep=',', header=True)
+        all_shape_selection.drop('geometry', axis=1).to_csv(
+            f'{folder}/multiple_stops/gtfs_edited/shapes.txt', index=False, sep=',', header=True)
+        
+        return f'{folder}/multiple_stops'        
     
     def StopInfo(self, stop_id):
         return self.stops[self.stops.stop_id==stop_id]
